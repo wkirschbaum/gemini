@@ -1,21 +1,18 @@
 # Gemini
 
-**TODO: Add description**
+**Naive and incomplete Gemini server**
 
-## Installation
+## WARNING
+This code is for learning and should not be used in any production
+system
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `gemini` to your list of dependencies in `mix.exs`:
+## How to use this project
 
-```elixir
-def deps do
-  [
-    {:gemini, "~> 0.1.0"}
-  ]
-end
-```
+    mix deps.get
+    mix run --no-halt
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/gemini](https://hexdocs.pm/gemini).
+Note the *mock* certificates in the root folder for ssl. Please
+generate your own if you want to use this outside of this example.
 
+
+Use any gemini client to access localhost:1965 to see `Hello, World!` returned

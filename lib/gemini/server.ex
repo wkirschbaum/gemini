@@ -10,27 +10,28 @@ defmodule Gemini.Server do
   def listen(arg) do
     port = Keyword.get(arg, :port, 1965)
 
-    {:ok, socket} =
-      :gen_tcp.listen(port, [:binary, packet: :line, active: false, reuseaddr: true])
+    {:ok, listen_socket} =
+      :ssl.listen(port, [:binary, :inet6, certfile: "certificate.pem", keyfile: "key.pem", packet: :line, active: false, reuseaddr: true])
 
     Logger.info("Accepting connections on port #{port}")
 
-    accept_connections(socket)
+    accept_connections(listen_socket)
   end
 
   defp accept_connections(listen_socket) do
-    case :gen_tcp.accept(listen_socket) do
+    case  :ssl.transport_accept(listen_socket) do
       {:ok, socket} ->
         {:ok, pid} =
           Task.Supervisor.start_child(
             Gemini.RequestSupervisor,
             fn ->
               Logger.debug("Connection opened")
+              :ok = :ssl.ssl_accept(socket)
               serve_connection(socket)
             end
           )
 
-        :ok = :gen_tcp.controlling_process(socket, pid)
+        :ssl.controlling_process(socket, pid)
       {:error, error} ->
         Logger.error(IO.inspect error)
     end
@@ -39,24 +40,20 @@ defmodule Gemini.Server do
   end
 
   defp serve_connection(socket) do
-    case :gen_tcp.recv(socket, 0) do
+    case :ssl.recv(socket, 0) do
       {:ok, data} ->
-        Logger.info(data)
-        case data do
-          "\r\n" ->
-            Logger.debug("End of message")
-          "\n" ->
-            Logger.debug("End of message")
-          data ->
-            write_line(data, socket)
-            serve_connection(socket)
-        end
+        Logger.info(IO.inspect data)
+        status = "20"
+        meta = "text/plain; charset=utf-8"
+        body = "Hello, World!"
+
+        result = "#{status} #{meta}\r\n#{body}\n"
+
+        Logger.info(IO.inspect result)
+
+        :ssl.send(socket, result)
       {:error, :closed} ->
         Logger.debug("Connection closed")
     end
-  end
-
-  defp write_line(line, socket) do
-    :gen_tcp.send(socket, line)
   end
 end
