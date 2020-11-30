@@ -47,7 +47,7 @@ defmodule Gemini.Server do
         meta = "text/plain; charset=utf-8"
         body = "Hello, World!"
 
-        result = "#{status} #{meta}\r\n#{body}\n"
+        result = "#{status} #{meta}\r\n#{body}"
 
         Logger.info(IO.inspect result)
 
