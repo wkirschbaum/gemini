@@ -8,8 +8,8 @@ defmodule Gemini.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Gemini.Worker.start_link(arg)
-      # {Gemini.Worker, arg}
+      {Task.Supervisor, name: Gemini.RequestSupervisor},
+      Gemini.Server
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
