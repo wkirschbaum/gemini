@@ -52,6 +52,8 @@ defmodule Gemini.Server do
         Logger.info(IO.inspect result)
 
         :ssl.send(socket, result)
+
+        :ssl.close(socket)
       {:error, :closed} ->
         Logger.debug("Connection closed")
     end
